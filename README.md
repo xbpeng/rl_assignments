@@ -1,6 +1,6 @@
 # RL Assignments
 
-Implementation of rl algorithms and environments.
+Template code for reinforcement learning assignments.
 
 ## Getting Started
 

@@ -13,7 +13,7 @@
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>CondaEnv|CondaEnv|rl_forge</InterpreterId>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <CommandLineArguments>--mode train --env_config data/envs/dm_cheetah.yaml --agent_config a2/dm_cheetah_cem_agent.yaml --log_file output/log.txt --out_model_file output/model.pt --max_samples 50000000 --visualize</CommandLineArguments>
+    <CommandLineArguments>--mode train --env_config data/envs/dm_cheetah.yaml --agent_config a1/dm_cheetah_bc_agent.yaml --log_file output/log.txt --out_model_file output/model.pt --max_samples 20000 --visualize</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
     <Name>rl_assignments</Name>
