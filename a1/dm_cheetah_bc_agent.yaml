@@ -1,0 +1,21 @@
+agent_name: "BC"
+
+model:
+  actor_net: "fc_2layers_64units"
+  actor_init_output_scale: 0.01
+  actor_std_type: "FIXED"
+  action_std: 0.2
+
+expert_config: "data/agents/bc_expert_agent.yaml"
+expert_model_file: "data/models/dm_cheetah_expert_model.pt"
+
+discount: 0.99
+steps_per_iter: 100
+iters_per_output: 10
+test_episodes: 10
+
+learning_rate: 5e-4
+update_epochs: 20
+
+exp_buffer_size: 1000000
+batch_size: 256

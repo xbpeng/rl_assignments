@@ -1,0 +1,5 @@
+env_name: "dm_walker"
+task: "run"
+
+time_limit: 10
+

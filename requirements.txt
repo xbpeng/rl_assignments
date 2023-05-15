@@ -1,0 +1,8 @@
+dm_control==1.0.11
+gym
+matplotlib
+numpy
+pygame==2.3.0
+pyyaml
+tensorboardX
+torch==1.9.1

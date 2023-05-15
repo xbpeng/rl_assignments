@@ -1,0 +1,4 @@
+env_name: "dm_cheetah"
+task: "run"
+
+time_limit: 10 # s

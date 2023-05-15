@@ -1,0 +1,5 @@
+env_name: "dm_hopper"
+task: "hop"
+
+time_limit: 10
+

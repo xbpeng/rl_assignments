@@ -1,0 +1,4 @@
+env_name: "dm_reacher"
+task: "easy"
+
+time_limit: 10 # s
