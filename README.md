@@ -6,7 +6,13 @@ Template code for reinforcement learning assignments.
 
 Install requirements:
 
-`pip install -r requirements.txt`
+```
+conda create -n rl python=3.8
+conda activate rl
+pip install -r requirements.txt
+```
+
+
 
 and it should be good to go.
 
