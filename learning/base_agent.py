@@ -110,7 +110,7 @@ class BaseAgent(torch.nn.Module):
         return
 
     def load(self, in_file):
-        state_dict = torch.load(in_file)
+        state_dict = torch.load(in_file, map_location=self._device)
         self.load_state_dict(state_dict)
         return
 
