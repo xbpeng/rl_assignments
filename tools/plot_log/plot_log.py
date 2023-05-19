@@ -1,8 +1,12 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
-import tools.util.plot_util as PlotUtil
 from functools import reduce
+
+import sys
+sys.path.append(os.getcwd())
+
+import tools.util.plot_util as plot_util
 
 files = [
     "output/log.txt",
