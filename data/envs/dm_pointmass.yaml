@@ -1,4 +1,4 @@
-env_name: "dm_cheetah"
-task: "run"
+env_name: "dm_point_mass"
+task: "easy"
 
 time_limit: 10 # s

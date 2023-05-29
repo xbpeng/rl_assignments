@@ -1,0 +1,17 @@
+agent_name: "CEM"
+
+model:
+  actor_net: "fc_1layers_16units"
+  actor_init_output_scale: 0.01
+  actor_std_type: "FIXED"
+  action_std: 0.2
+  
+discount: 0.99
+steps_per_iter: 4096
+iters_per_output: 10
+test_episodes: 32
+
+population_size: 40
+elite_ratio: 0.25
+eps_per_candidate: 5
+min_param_std: 0.1

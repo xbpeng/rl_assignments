@@ -1,0 +1,4 @@
+env_name: "dm_cartpole"
+task: "balance"
+
+time_limit: 10 # s
