@@ -74,7 +74,7 @@ for f, file_group in enumerate(files):
     label = os.path.splitext(label)[0]
 
     line_col = None
-    curr_min_x, curr_max_x, _, _ = PlotUtil.plot_line(x_data, y_data, std_data, label, color=line_col,
+    curr_min_x, curr_max_x, _, _ = plot_util.plot_line(x_data, y_data, std_data, label, color=line_col,
                                                       draw_band=draw_band)
 
     min_len = int(reduce(lambda x, y: np.minimum(x, len(y)), x_data, np.inf))
