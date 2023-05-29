@@ -16,7 +16,7 @@ test_episodes: 32
 critic_update_epoch: 5
 
 # optimizer parameters
-actor_learning_rate: 5e-4
+actor_learning_rate: 2e-3
 critic_learning_rate: 2e-3
 
 batch_size: 512
