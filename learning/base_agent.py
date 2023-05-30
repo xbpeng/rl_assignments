@@ -153,7 +153,7 @@ class BaseAgent(torch.nn.Module):
         lr = float(config["learning_rate"])
         params = list(self.parameters())
         params = [p for p in params if p.requires_grad]
-        self._optimizer = torch.optim.SGD(self.parameters(), lr, momentum=0.9)
+        self._optimizer = torch.optim.SGD(params, lr, momentum=0.9)
         return
     
     def _build_exp_buffer(self, config):
