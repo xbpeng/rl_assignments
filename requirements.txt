@@ -1,8 +1,10 @@
-dm_control==1.0.11
-gym
+dm_control
+gym[atari]==0.26.2
+gym[accept-rom-license]==0.26.2
 matplotlib
 numpy
-pygame==2.3.0
+opencv-python
+pygame>=2.3.0
 pyyaml
 tensorboardX
-torch==1.9.1
+torch>=1.9.1

@@ -1,5 +1,6 @@
 import yaml
 
+import envs.atari_env as atari_env
 import envs.env_dm as env_dm
 
 def build_env(env_file, device, visualize):
@@ -10,6 +11,8 @@ def build_env(env_file, device, visualize):
     
     if (env_name.startswith("dm_")):
         env = env_dm.DMEnv(config=env_config, device=device, visualize=visualize)
+    elif (env_name.startswith("atari_")):
+        env = atari_env.AtariEnv(config=env_config, device=device, visualize=visualize)
     else:
         assert(False), "Unsupported env: {}".format(env_name)
 

@@ -9,13 +9,21 @@ sys.path.append(os.getcwd())
 import tools.util.plot_util as plot_util
 
 files = [
+<<<<<<< HEAD
     "output/log.txt",
+=======
+    "a2/soln/dm_cheetah_pg_log.txt",
+>>>>>>> master
 ]
 
 draw_band = True
 x_key = "Samples"
 y_key = "Test_Return"
+<<<<<<< HEAD
 plot_title = "BC - Cheetah"
+=======
+plot_title = "PG - Cheetah"
+>>>>>>> master
 std_key = None
 
 def filter_data(x, window_size):

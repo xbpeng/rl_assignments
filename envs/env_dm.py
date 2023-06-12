@@ -67,7 +67,9 @@ class DMEnv(base_env.BaseEnv):
             else:  
                 obs_list.append(v)
 
-        flat_obs = torch.from_numpy(np.concatenate(obs_list, axis=-1))
+        flat_obs = np.concatenate(obs_list, axis=-1)
+        flat_obs = flat_obs.astype(np.float32)
+        flat_obs = torch.from_numpy(flat_obs)
         flat_obs = flat_obs.to(device=self._device)
 
         return  flat_obs
@@ -92,9 +94,6 @@ class DMEnv(base_env.BaseEnv):
 
         return action_space
   
-    def compute_act_shape(self):
-        return self._env.action_spec().shape[0]
-    
     def get_reward_bounds(self):
         return (0.0, 1.0)
 

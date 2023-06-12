@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6cbc0484-fec8-4966-9d8b-0d33c12a51cd}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>tools\plot_log\plot_log.py</StartupFile>
+    <StartupFile>run.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -13,7 +13,15 @@
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>CondaEnv|CondaEnv|rl_forge</InterpreterId>
     <IsWindowsApplication>False</IsWindowsApplication>
+<<<<<<< HEAD
+<<<<<<< HEAD
     <CommandLineArguments>--mode train --env_config data/envs/dm_cheetah.yaml --agent_config a1/dm_cheetah_bc_agent.yaml --log_file output/log.txt --out_model_file output/model.pt --max_samples 20000 --visualize</CommandLineArguments>
+=======
+    <CommandLineArguments>--mode train --env_config data/envs/dm_cheetah.yaml --agent_config a2/dm_cheetah_pg_agent.yaml --log_file output/log.txt --out_model_file output/model.pt --max_samples 50000000 --visualize</CommandLineArguments>
+>>>>>>> master
+=======
+    <CommandLineArguments>--mode train --env_config data/envs/atari_pong.yaml --agent_config a3/atari_dqn_agent.yaml --log_file output/log.txt --out_model_file output/model.pt --visualize</CommandLineArguments>
+>>>>>>> master
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
     <Name>rl_assignments</Name>
@@ -24,10 +32,19 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="a3\atari_dqn_agent.yaml" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="a1\bc_agent.py" />
+<<<<<<< HEAD
+=======
+    <Compile Include="a2\cem_agent.py" />
+    <Compile Include="a2\pg_agent.py" />
+    <Compile Include="a3\dqn_agent.py" />
+    <Compile Include="envs\atari_env.py" />
+    <Compile Include="envs\atari_wrappers.py" />
+>>>>>>> master
     <Compile Include="envs\base_env.py" />
     <Compile Include="envs\env_dm.py" />
     <Compile Include="learning\agent_builder.py" />
@@ -36,10 +53,22 @@
     <Compile Include="learning\bc_model.py" />
     <Compile Include="learning\cem_model.py" />
     <Compile Include="learning\distribution_categorical.py" />
+<<<<<<< HEAD
+=======
+    <Compile Include="learning\dqn_model.py" />
+    <Compile Include="learning\dyna_agent.py" />
+    <Compile Include="learning\dyna_model.py" />
+>>>>>>> master
     <Compile Include="learning\experience_buffer.py" />
     <Compile Include="learning\distribution_gaussian_diag.py" />
     <Compile Include="learning\expert_agent.py" />
     <Compile Include="learning\expert_model.py" />
+<<<<<<< HEAD
+=======
+    <Compile Include="learning\mb_agent.py" />
+    <Compile Include="learning\mb_model.py" />
+    <Compile Include="learning\nets\cnn_3conv_1fc_0.py" />
+>>>>>>> master
     <Compile Include="learning\nets\fc_1layers_16units.py" />
     <Compile Include="learning\nets\fc_1layers_32units.py" />
     <Compile Include="learning\nets\fc_2layers_1024units.py" />
@@ -60,6 +89,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="a1\" />
+<<<<<<< HEAD
+=======
+    <Folder Include="a2\" />
+    <Folder Include="a3\" />
+>>>>>>> master
     <Folder Include="envs\" />
     <Folder Include="learning" />
     <Folder Include="learning\nets\" />

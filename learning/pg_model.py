@@ -47,11 +47,11 @@ class PGModel(base_model.BaseModel):
         return
 
     def _build_actor_input_dict(self, env):
-        obs_shape = env.compute_obs_shape()
-        input_dict = {"obs": obs_shape}
+        obs_space = env.get_obs_space()
+        input_dict = {"obs": obs_space}
         return input_dict
     
     def _build_critic_input_dict(self, env):
-        obs_shape = env.compute_obs_shape()
-        input_dict = {"obs": obs_shape}
+        obs_space = env.get_obs_space()
+        input_dict = {"obs": obs_space}
         return input_dict

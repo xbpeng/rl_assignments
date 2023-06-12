@@ -79,11 +79,8 @@ class PGAgent(base_agent.BaseAgent):
             norm_a = norm_action_dist.mode
         else:
             assert(False), "Unsupported agent mode: {}".format(self._mode)
-            
-        norm_a_logp = norm_action_dist.log_prob(norm_a)
-
+        
         norm_a = norm_a.detach()
-        norm_a_logp = norm_a_logp.detach()
         a = self._a_norm.unnormalize(norm_a)
 
         info = dict()

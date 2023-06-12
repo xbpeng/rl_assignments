@@ -1,0 +1,3 @@
+env_name: "atari_Breakout"
+
+max_timesteps: 5000

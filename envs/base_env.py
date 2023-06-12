@@ -1,6 +1,9 @@
 import abc
 import enum
+import gym
 import numpy as np
+
+import util.torch_util as torch_util
 
 class EnvMode(enum.Enum):
     TRAIN = 0
@@ -29,10 +32,18 @@ class BaseEnv(abc.ABC):
     def step(self, action):
         return
     
-    def compute_obs_shape(self):
-        obs, obs_dict = self.reset()
+    def get_obs_space(self):
+        obs, _ = self.reset()
         obs_shape = list(obs.shape)
-        return obs_shape
+        
+        obs_dtype = torch_util.torch_dtype_to_numpy(obs.dtype)
+        obs_space = gym.spaces.Box(
+            low=-np.inf,
+            high=np.inf,
+            shape=obs_shape,
+            dtype=obs_dtype,
+        )
+        return obs_space
     
     def get_action_space(self):
         return self._action_space

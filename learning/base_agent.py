@@ -11,6 +11,7 @@ import learning.experience_buffer as experience_buffer
 import learning.normalizer as normalizer
 import learning.return_tracker as return_tracker
 import util.tb_logger as tb_logger
+import util.torch_util as torch_util
 
 import learning.distribution_gaussian_diag as distribution_gaussian_diag
 
@@ -127,24 +128,26 @@ class BaseAgent(torch.nn.Module):
         return
 
     def _build_normalizers(self):
-        obs_shape = self._env.compute_obs_shape()
-        self._obs_norm = normalizer.Normalizer(obs_shape, device=self._device)
+        obs_space = self._env.get_obs_space()
+        obs_dtype = torch_util.numpy_dtype_to_torch(obs_space.dtype)
+        self._obs_norm = normalizer.Normalizer(obs_space.shape, device=self._device, dtype=obs_dtype)
         self._a_norm = self._build_action_normalizer()
         return
     
     def _build_action_normalizer(self):
         a_space = self._env.get_action_space()
+        a_dtype = torch_util.numpy_dtype_to_torch(a_space.dtype)
 
         if (isinstance(a_space, gym.spaces.Box)):
-            a_mean = torch.tensor(0.5 * (a_space.high + a_space.low), device=self._device)
-            a_std = torch.tensor(0.5 * (a_space.high - a_space.low), device=self._device)
+            a_mean = torch.tensor(0.5 * (a_space.high + a_space.low), device=self._device, dtype=a_dtype)
+            a_std = torch.tensor(0.5 * (a_space.high - a_space.low), device=self._device, dtype=a_dtype)
             a_norm = normalizer.Normalizer(a_mean.shape, device=self._device, init_mean=a_mean, 
-                                                 init_std=a_std, dtype=a_mean.dtype)
+                                                 init_std=a_std, dtype=a_dtype)
         elif (isinstance(a_space, gym.spaces.Discrete)):
-            a_mean = torch.tensor([0], device=self._device, dtype=torch.long)
-            a_std = torch.tensor([1], device=self._device, dtype=torch.long)
+            a_mean = torch.tensor([0], device=self._device, dtype=a_dtype)
+            a_std = torch.tensor([1], device=self._device, dtype=a_dtype)
             a_norm = normalizer.Normalizer(a_mean.shape, device=self._device, init_mean=a_mean, 
-                                                 init_std=a_std, eps=0, dtype=a_mean.dtype)
+                                                 init_std=a_std, eps=0, dtype=a_dtype)
         else:
             assert(False), "Unsuppoted action space: {}".format(a_space)
         return a_norm
@@ -158,18 +161,20 @@ class BaseAgent(torch.nn.Module):
     
     def _build_exp_buffer(self, config):
         buffer_length = self._get_exp_buffer_length()
-        self._exp_buffer = experience_buffer.ExperienceBuffer(buffer_length=buffer_length, device=self._device)
-
-        obs_shape = self._env.compute_obs_shape()
-        obs_buffer = torch.zeros([buffer_length] + obs_shape, device=self._device, dtype=torch.float)
+        self._exp_buffer = experience_buffer.ExperienceBuffer(buffer_length=buffer_length,
+                                                              device=self._device)
+        
+        obs_space = self._env.get_obs_space()
+        obs_dtype = torch_util.numpy_dtype_to_torch(obs_space.dtype)
+        obs_buffer = torch.zeros([buffer_length] + list(obs_space.shape), device=self._device, dtype=obs_dtype)
         self._exp_buffer.add_buffer("obs", obs_buffer)
-
+        
         next_obs_buffer = torch.zeros_like(obs_buffer)
         self._exp_buffer.add_buffer("next_obs", next_obs_buffer)
 
-        action_size = self.get_action_size()
-        action_dtype = self._get_action_dtype()
-        action_buffer = torch.zeros([buffer_length, action_size], device=self._device, dtype=action_dtype)
+        a_space = self._env.get_action_space()
+        a_dtype = torch_util.numpy_dtype_to_torch(a_space.dtype)
+        action_buffer = torch.zeros([buffer_length] + list(a_space.shape), device=self._device, dtype=a_dtype)
         self._exp_buffer.add_buffer("action", action_buffer)
         
         reward_buffer = torch.zeros([buffer_length], device=self._device, dtype=torch.float)
@@ -188,17 +193,6 @@ class BaseAgent(torch.nn.Module):
     def _get_exp_buffer_length(self):
         return 0
     
-    def _get_action_dtype(self):
-        dtype = None
-        a_space = self._env.get_action_space()
-        if (isinstance(a_space, gym.spaces.Box)):
-            dtype = torch.float32
-        elif (isinstance(a_space, gym.spaces.Discrete)):
-            dtype = torch.long
-        else:
-            assert(False), "Unsuppoted action space: {}".format(a_space)
-        return dtype
-
     def _build_logger(self, log_file):
         log = tb_logger.TBLogger()
         log.set_step_key("Samples")
@@ -302,8 +296,9 @@ class BaseAgent(torch.nn.Module):
     def _record_data_pre_step(self, obs, info, action, action_info):
         self._exp_buffer.record("obs", obs)
         self._exp_buffer.record("action", action)
-
-        self._obs_norm.record(obs.unsqueeze(0))
+        
+        if (self._need_normalizer_update()):
+            self._obs_norm.record(obs.unsqueeze(0))
         return
 
     def _record_data_post_step(self, next_obs, r, done, next_info):

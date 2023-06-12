@@ -4,7 +4,7 @@ import torch
 def build_net(input_dict, activation):
     layer_sizes = [16]
 
-    input_dim = np.sum([np.prod(input_shape) for input_shape in input_dict.values()])
+    input_dim = np.sum([np.prod(curr_input.shape) for curr_input in input_dict.values()])
     
     in_size = input_dim
     layers = []

@@ -118,11 +118,13 @@ class BCAgent(base_agent.BaseAgent):
 
         ## a) sample an action from the policy
         # placeholder
-        a = torch.zeros([self._env.compute_act_shape()], device=self._device)
+        a_space = self._env.get_action_space()
+        a = torch.zeros(a_space.shape, device=self._device)
         
         ## b) query the expert for an action
         # placeholder
-        expert_a = torch.zeros([self._env.compute_act_shape()], device=self._device)
+        a_space = self._env.get_action_space()
+        expert_a = torch.zeros(a_space.shape, device=self._device)
 
         a_info = {
             "expert_a": expert_a
