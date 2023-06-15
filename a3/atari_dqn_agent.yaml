@@ -6,7 +6,7 @@ model:
 
 discount: 0.99
 steps_per_iter: 1
-iters_per_output: 20000
+iters_per_output: 50000
 test_episodes: 10
 normalizer_samples: 0
 
