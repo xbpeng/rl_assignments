@@ -136,5 +136,5 @@ class BCAgent(base_agent.BaseAgent):
         TODO 1.2: Implement code to calculate the loss for training the policy.
         '''
         # placeholder
-        loss = torch.zeros(1)
+        loss = torch.zeros(1, requires_grad=True)
         return loss
