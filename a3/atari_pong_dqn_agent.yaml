@@ -1,0 +1,24 @@
+agent_name: "DQN"
+
+model:
+  q_net: "cnn_3conv_1fc_0"
+  q_init_output_scale: 1.0
+
+discount: 0.99
+steps_per_iter: 1
+iters_per_output: 50000
+test_episodes: 10
+normalizer_samples: 0
+
+# optimizer parameters
+learning_rate: 5e-4
+
+exp_buffer_size: 200000
+updates_per_iter: 1
+batch_size: 128
+init_samples: 50000
+tar_net_update_iters: 10000
+
+exp_anneal_samples: 1000000
+exp_prob_beg: 1.0
+exp_prob_end: 0.1
