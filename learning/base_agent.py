@@ -259,16 +259,18 @@ class BaseAgent(torch.nn.Module):
         for e in range(num_episodes):
             curr_ret = 0.0
             curr_ep_len = 0
+            self._env._episode = e
             while True:
                 action, action_info = self._decide_action(self._curr_obs, self._curr_info)
                 self._curr_obs, r, done, self._curr_info = self._step_env(action)
 
                 curr_ret += r.item()
                 curr_ep_len += 1
-
+                self._env._curr_return = curr_ret
                 if done != base_env.DoneFlags.NULL.value:
                     sum_rets += curr_ret
                     sum_ep_lens += curr_ep_len
+                    time.sleep(3)
                     self._curr_obs, self._curr_info = self._env.reset()
                     break
 

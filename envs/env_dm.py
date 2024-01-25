@@ -18,6 +18,8 @@ class DMEnv(base_env.BaseEnv):
         self._device = device
         self._visualize = visualize
         self._time_limit = config['time_limit']
+        self._episode = 0
+        self._curr_return = 0
         self._mode = None
         
         self._env = self._build_dm_env(config)
@@ -99,7 +101,7 @@ class DMEnv(base_env.BaseEnv):
 
     def _init_render(self):
         self._clock = pygame.time.Clock()
-
+        self._episode = 0
         self._render_queue = multiprocessing.Queue()
         self._render_proc = multiprocessing.Process(target=render_worker, args=(SCREEN_WIDTH, SCREEN_HEIGHT, self._render_queue))
         self._render_proc.start()
@@ -108,7 +110,7 @@ class DMEnv(base_env.BaseEnv):
     def _render(self):
         im = self._env.physics.render(SCREEN_HEIGHT, SCREEN_WIDTH, camera_id=0)
         im = np.transpose(im, axes=[1, 0, 2])
-        self._render_queue.put(im)
+        self._render_queue.put((im, self._episode, self._time_limit, self._env._physics.time(), self._curr_return))
 
         fps = 1.0 / self._env.control_timestep()
         self._clock.tick(fps)
@@ -116,6 +118,12 @@ class DMEnv(base_env.BaseEnv):
 
    
 
+def render_text(surface, value, center):
+    font = pygame.font.Font(None, 24)
+    text_surface = font.render(value, True, (255, 255, 255))
+    text_rect = text_surface.get_rect()
+    text_rect.center = center
+    surface.blit(text_surface, text_rect)
 
 def render_worker(screen_w, screen_h, render_queue):
     pygame.init()     
@@ -128,8 +136,11 @@ def render_worker(screen_w, screen_h, render_queue):
             if event.type == pygame.QUIT:
                 done = True
 
-        im = render_queue.get()
+        im, episode, time_limit, current_time, current_return = render_queue.get()
         surface = pygame.pixelcopy.make_surface(im)
+        render_text(surface, f'Episode: {episode + 1}', (screen_w - 60, 20))
+        render_text(surface, f'Time: {current_time:.2f} / {time_limit}', (screen_w - 70, 40))
+        render_text(surface, f'Return: {current_return:.2f}', (screen_w - 60, 60))
         window.blit(surface, (0, 0))
         pygame.display.update()
 
