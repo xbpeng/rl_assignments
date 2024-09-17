@@ -15,7 +15,7 @@ files = [
 draw_band = True
 x_key = "Samples"
 y_key = "Test_Return"
-plot_title = "BC - Cheetah"
+plot_title = "Title"
 std_key = None
 
 def filter_data(x, window_size):
