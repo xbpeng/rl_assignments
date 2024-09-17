@@ -8,16 +8,19 @@ model:
   
   critic_net: "fc_2layers_128units"
 
-
+actor_optimizer:
+    type: "SGD"
+    learning_rate: 2e-3
+ 
+critic_optimizer:
+    type: "SGD"
+    learning_rate: 2e-3
+ 
 discount: 0.99
 steps_per_iter: 4096
 iters_per_output: 50
 test_episodes: 32
 critic_update_epoch: 5
-
-# optimizer parameters
-actor_learning_rate: 2e-3
-critic_learning_rate: 2e-3
 
 batch_size: 512
 norm_adv_clip: 4.0

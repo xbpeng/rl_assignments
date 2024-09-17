@@ -3,7 +3,9 @@ import torch
 
 import envs.base_env as base_env
 import learning.base_agent as base_agent
+import learning.mp_optimizer as mp_optimizer
 import learning.pg_model as pg_model
+import util.mp_util as mp_util
 import util.torch_util as torch_util
 
 class PGAgent(base_agent.BaseAgent):
@@ -16,7 +18,11 @@ class PGAgent(base_agent.BaseAgent):
     def _load_params(self, config):
         super()._load_params(config)
         
+        num_procs = mp_util.get_num_procs()
+
         self._batch_size = config["batch_size"]
+        self._batch_size = int(np.ceil(self._batch_size / num_procs))
+
         self._critic_update_epoch = config["critic_update_epoch"]
         self._norm_adv_clip = config["norm_adv_clip"]
         self._action_bound_weight = config["action_bound_weight"]
@@ -56,16 +62,15 @@ class PGAgent(base_agent.BaseAgent):
         return
 
     def _build_optimizer(self, config):
-        actor_lr = float(config["actor_learning_rate"])
-        critic_lr = float(config["critic_learning_rate"])
-
+        actor_opt_config = config["actor_optimizer"]
         actor_params = list(self._model._actor_layers.parameters())+list(self._model._action_dist.parameters())
         actor_params_grad = [p for p in actor_params if p.requires_grad]
-        self._actor_optimizer = torch.optim.SGD(actor_params_grad, actor_lr, momentum=0.9)
-
+        self._actor_optimizer = mp_optimizer.MPOptimizer(actor_opt_config, actor_params_grad)
+        
+        critic_opt_config = config["critic_optimizer"]
         critic_params = list(self._model._critic_layers.parameters())+list(self._model._critic_out.parameters())
         critic_params_grad = [p for p in critic_params if p.requires_grad]
-        self._critic_optimizer = torch.optim.SGD(critic_params_grad, critic_lr, momentum=0.9)
+        self._critic_optimizer = mp_optimizer.MPOptimizer(critic_opt_config, critic_params_grad)
 
         return
     
@@ -152,9 +157,7 @@ class PGAgent(base_agent.BaseAgent):
 
         loss = self._calc_critic_loss(norm_obs, tar_val)
 
-        self._critic_optimizer.zero_grad()
-        loss.backward()
-        self._critic_optimizer.step()
+        self._critic_optimizer.step(loss)
 
         info = {
             "critic_loss": loss
@@ -179,13 +182,13 @@ class PGAgent(base_agent.BaseAgent):
                 action_bound_loss = torch.mean(action_bound_loss)
                 loss += self._action_bound_weight * action_bound_loss
                 info["action_bound_loss"] = action_bound_loss.detach()
-
-        self._actor_optimizer.zero_grad()
-        loss.backward()
-        self._actor_optimizer.step()
+        
+        self._actor_optimizer.step(loss)
         
         return info
     
+
+
     def _calc_return(self, r, done):
         '''
         TODO 2.1: Given a tensor of per-timestep rewards (r), and a tensor (done)

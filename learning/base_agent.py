@@ -8,8 +8,10 @@ import torch
 
 import envs.base_env as base_env
 import learning.experience_buffer as experience_buffer
+import learning.mp_optimizer as mp_optimizer
 import learning.normalizer as normalizer
 import learning.return_tracker as return_tracker
+import util.mp_util as mp_util
 import util.tb_logger as tb_logger
 import util.torch_util as torch_util
 
@@ -79,9 +81,12 @@ class BaseAgent(torch.nn.Module):
     def test_model(self, num_episodes):
         self.eval()
         self.set_mode(AgentMode.TEST)
+        
+        num_procs = mp_util.get_num_procs()
+        num_eps_proc = int(np.ceil(num_episodes / num_procs))
 
         self._curr_obs, self._curr_info = self._env.reset()
-        test_info = self._rollout_test(num_episodes)
+        test_info = self._rollout_test(num_eps_proc)
 
         return test_info
     
@@ -106,8 +111,9 @@ class BaseAgent(torch.nn.Module):
         return
 
     def save(self, out_file):
-        state_dict = self.state_dict()
-        torch.save(state_dict, out_file)
+        if (mp_util.is_root_proc()):
+            state_dict = self.state_dict()
+            torch.save(state_dict, out_file)
         return
 
     def load(self, in_file):
@@ -116,11 +122,16 @@ class BaseAgent(torch.nn.Module):
         return
 
     def _load_params(self, config):
+        num_procs = mp_util.get_num_procs()
+        
         self._discount = config["discount"]
-        self._steps_per_iter = config["steps_per_iter"]
         self._iters_per_output = config["iters_per_output"]
-        self._test_episodes = config["test_episodes"]
         self._normalizer_samples = config.get("normalizer_samples", np.inf)
+        self._test_episodes = config["test_episodes"]
+        
+        self._steps_per_iter = config["steps_per_iter"]
+        self._steps_per_iter = int(np.ceil(self._steps_per_iter / num_procs))
+
         return
 
     @abc.abstractmethod
@@ -153,10 +164,10 @@ class BaseAgent(torch.nn.Module):
         return a_norm
 
     def _build_optimizer(self, config):
-        lr = float(config["learning_rate"])
+        opt_config = config["optimizer"]
         params = list(self.parameters())
         params = [p for p in params if p.requires_grad]
-        self._optimizer = torch.optim.SGD(params, lr, momentum=0.9)
+        self._optimizer = mp_optimizer.MPOptimizer(opt_config, params)
         return
     
     def _build_exp_buffer(self, config):
@@ -196,11 +207,14 @@ class BaseAgent(torch.nn.Module):
     def _build_logger(self, log_file):
         log = tb_logger.TBLogger()
         log.set_step_key("Samples")
-        log.configure_output_file(log_file)
+        if (mp_util.is_root_proc()):
+            log.configure_output_file(log_file)
         return log
 
     def _update_sample_count(self):
-        return self._exp_buffer.get_total_samples()
+        sample_count = self._exp_buffer.get_total_samples()
+        sample_count = mp_util.reduce_sum(sample_count)
+        return sample_count
 
     def _init_train(self):
         self._iter = 0
@@ -352,6 +366,8 @@ class BaseAgent(torch.nn.Module):
         test_return = test_info["mean_return"]
         test_ep_len = test_info["mean_ep_len"]
         test_eps = test_info["episodes"]
+        test_eps = mp_util.reduce_sum(test_eps)
+
         self._logger.log("Test_Return", test_return, collection="0_Main")
         self._logger.log("Test_Episode_Length", test_ep_len, collection="0_Main", quiet=True)
         self._logger.log("Test_Episodes", test_eps, collection="1_Info", quiet=True)
@@ -359,6 +375,8 @@ class BaseAgent(torch.nn.Module):
         train_return = train_info.pop("mean_return")
         train_ep_len = train_info.pop("mean_ep_len")
         train_eps = train_info.pop("episodes")
+        train_eps = mp_util.reduce_sum(train_eps)
+
         self._logger.log("Train_Return", train_return, collection="0_Main")
         self._logger.log("Train_Episode_Length", train_ep_len, collection="0_Main", quiet=True)
         self._logger.log("Train_Episodes", train_eps, collection="1_Info", quiet=True)

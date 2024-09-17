@@ -5,7 +5,11 @@ model:
   actor_init_output_scale: 0.01
   actor_std_type: "FIXED"
   action_std: 0.2
-
+  
+optimizer:
+    type: "SGD"
+    learning_rate: 5e-4
+    
 expert_config: "data/agents/bc_expert_agent.yaml"
 expert_model_file: "data/models/dm_walker_run_expert_model.pt"
 
@@ -14,7 +18,6 @@ steps_per_iter: 100
 iters_per_output: 10
 test_episodes: 10
 
-learning_rate: 5e-4
 update_epochs: 20
 
 exp_buffer_size: 1000000

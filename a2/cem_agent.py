@@ -3,6 +3,7 @@ import torch
 
 import learning.base_agent as base_agent
 import learning.cem_model as cem_model
+import util.mp_util as mp_util
 
 class CEMAgent(base_agent.BaseAgent):
     NAME = "CEM"
@@ -57,10 +58,16 @@ class CEMAgent(base_agent.BaseAgent):
         return self._sample_count
     
     def _train_iter(self):
-        candidates = self._sample_candidates(self._population_size)
+        num_procs = mp_util.get_num_procs()
+        num_candidates = int(np.ceil(self._population_size / num_procs))
+        candidates = self._sample_candidates(num_candidates)
 
         rets, ep_lens = self._eval_candidates(candidates)
-        
+        candidates, rets, ep_lens = self._gather_candidates(candidates, rets, ep_lens)
+
+        rets = rets.cpu().numpy()
+        ep_lens = ep_lens.cpu().numpy()
+
         curr_best_idx = np.argmax(rets)
         curr_best_ret = rets[curr_best_idx]
 
@@ -82,6 +89,8 @@ class CEMAgent(base_agent.BaseAgent):
         num_eps = self._population_size * self._eps_per_candidate
         mean_param_std = torch.mean(new_std)
 
+        assert(self._check_synced()), "Network parameters desynchronized"
+
         train_info = {
             "mean_return": train_return,
             "mean_ep_len": train_ep_len,
@@ -89,6 +98,29 @@ class CEMAgent(base_agent.BaseAgent):
             "param_std": mean_param_std
         }
         return train_info
+
+    def _gather_candidates(self, candidates, rets, ep_lens):
+        candidates = mp_util.all_gather(candidates)
+        rets = mp_util.all_gather(rets)
+        ep_lens = mp_util.all_gather(ep_lens)
+
+        candidates = torch.cat(candidates, dim=0)
+        rets = torch.cat(rets, dim=0)
+        ep_lens = torch.cat(ep_lens, dim=0)
+
+        return candidates, rets, ep_lens
+
+    def _check_synced(self):
+        global_param_mean = mp_util.broadcast(self._param_mean)
+        global_param_std = mp_util.broadcast(self._param_std)
+        global_best_params = mp_util.broadcast(self._best_params)
+
+        synced = torch.equal(global_param_mean, self._param_mean)
+        synced &= torch.equal(global_param_std, self._param_std)
+        synced &= torch.equal(global_best_params, self._best_params)
+
+        return synced
+
 
 
     def _sample_candidates(self, n):
@@ -118,8 +150,8 @@ class CEMAgent(base_agent.BaseAgent):
         n = candidates.shape[0]
 
         # placeholder
-        rets = np.zeros(n)
-        ep_lens = np.zeros(n)
+        rets = torch.zeros(n, device=self._device)
+        ep_lens = torch.zeros(n, device=self._device)
 
         return rets, ep_lens
 
