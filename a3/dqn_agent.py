@@ -172,7 +172,7 @@ class DQNAgent(base_agent.BaseAgent):
         '''
         
         # placeholder
-        loss = torch.zeros(1)
+        loss = torch.zeros(1, device=self._device)
         
         return loss
     

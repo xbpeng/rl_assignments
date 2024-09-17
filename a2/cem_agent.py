@@ -150,8 +150,8 @@ class CEMAgent(base_agent.BaseAgent):
         n = candidates.shape[0]
 
         # placeholder
-        rets = torch.zeros(n, device=self._device)
-        ep_lens = torch.zeros(n, device=self._device)
+        rets = torch.zeros(n, dtype=torch.float64, device=self._device)
+        ep_lens = torch.zeros(n, dtype=torch.float64, device=self._device)
 
         return rets, ep_lens
 
