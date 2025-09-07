@@ -19,7 +19,9 @@ and it should be good to go.
 
 To train a policy, run the following command:
 
-``python run.py --env_config data/envs/dm_cheetah.yaml --agent_config a2/dm_cheetah_cem_agent.yaml --mode train --log_file output/log.txt --out_model_file output/model.pt --visualize --num_workers 1``
+```
+python run.py --env_config data/envs/dm_cheetah.yaml --agent_config a2/dm_cheetah_cem_agent.yaml --mode train --log_file output/log.txt --out_model_file output/model.pt --visualize --num_workers 1
+```
 
 - `--env_config` specifies the configuration file for the environment.
 - `--agent_config` specifies configuration file for the agent.
@@ -32,7 +34,9 @@ To train a policy, run the following command:
 
 To load a trained model, run the following command:
 
-``python run.py --env_config data/envs/dm_cheetah_env.yaml --agent_config a2/dm_cheetah_cem_agent.yaml --mode test --model_file data/models/dm_cheetah_ppo_model.pt --visualize --num_workers 1``
+```
+python run.py --env_config data/envs/dm_cheetah_env.yaml --agent_config a2/dm_cheetah_cem_agent.yaml --mode test --model_file data/models/dm_cheetah_ppo_model.pt --visualize --num_workers 1
+```
 
 - `--model_file` specifies the `.pt` file that contains parameters for the trained model. Pretrained models are available in `data/models/`.
 
@@ -41,7 +45,9 @@ To load a trained model, run the following command:
 
 During training, a tensorboard `events` file will be saved the same output directory as the log file. The log can be viewed with:
 
-``tensorboard --logdir=output/ --port=6006 --bind_all``
+```
+tensorboard --logdir=output/ --port=6006 --bind_all
+```
 
 
 The output log `.txt` file can also be plotted using the plotting script in `tools/plot_log/plot_log.py`.
