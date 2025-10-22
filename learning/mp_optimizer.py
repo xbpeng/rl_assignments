@@ -79,4 +79,7 @@ class MPOptimizer():
         self._param_buffer[:] = torch.nn.utils.parameters_to_vector(self._grad_list)
         mp_util.reduce_inplace_mean(self._param_buffer)
         torch.nn.utils.vector_to_parameters(self._param_buffer, self._grad_list)
+        
+        # add a barrier to prevent potential race conditions on some GPUs
+        torch.distributed.barrier()
         return
