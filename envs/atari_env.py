@@ -1,7 +1,7 @@
 import envs.base_env as base_env
 import envs.atari_wrappers as atari_wrappers
 
-import gym
+import gymnasium as gym
 import numpy as np
 import torch
 

@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import torch
 
 import learning.base_model as base_model

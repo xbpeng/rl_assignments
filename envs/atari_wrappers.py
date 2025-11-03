@@ -1,10 +1,10 @@
 import numpy as np
 from collections import deque
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 import cv2
 cv2.ocl.setUseOpenCL(False)
-from gym.wrappers import TimeLimit
+from gymnasium.wrappers import TimeLimit
 
 class NoopResetEnv(gym.Wrapper):
     def __init__(self, env, noop_max=30):

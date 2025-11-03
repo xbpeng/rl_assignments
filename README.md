@@ -35,7 +35,7 @@ python run.py --env_config data/envs/dm_cheetah.yaml --agent_config a2/dm_cheeta
 To load a trained model, run the following command:
 
 ```
-python run.py --env_config data/envs/dm_cheetah_env.yaml --agent_config a2/dm_cheetah_cem_agent.yaml --mode test --model_file [path to model .pt file] --visualize --num_workers 1
+python run.py --env_config data/envs/dm_cheetah_env.yaml --agent_config a2/dm_cheetah_cem_agent.yaml --mode test --model_file [path to model.pt] --visualize --num_workers 1
 ```
 
 - `--model_file` specifies the `.pt` file that contains parameters for the trained model. Pretrained models are available in `data/models/`.

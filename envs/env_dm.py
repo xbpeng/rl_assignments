@@ -2,7 +2,7 @@ import envs.base_env as base_env
 
 from dm_control import suite
 import dm_env
-import gym
+import gymnasium as gym
 import multiprocessing
 import numpy as np
 import pygame
@@ -86,8 +86,8 @@ class DMEnv(base_env.BaseEnv):
     def get_action_space(self):
         action_spec = self._env.action_spec()
         if (isinstance(action_spec, dm_env.specs.BoundedArray)):
-            low = action_spec.minimum
-            high = action_spec.maximum
+            low = action_spec.minimum.astype(np.float32)
+            high = action_spec.maximum.astype(np.float32)
             action_space = gym.spaces.Box(low=low, high=high, shape=low.shape)
         else:
             assert(False), "Unsupported DM action type"

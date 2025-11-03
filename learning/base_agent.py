@@ -1,6 +1,6 @@
 import abc
 import enum
-import gym
+import gymnasium as gym
 import numpy as np
 import os
 import time
