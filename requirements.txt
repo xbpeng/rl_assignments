@@ -1,5 +1,5 @@
 dm_control
-gymnasium[atari]
+gymnasium[atari,accept-rom-license]==0.28.1
 matplotlib
 numpy
 opencv-python
